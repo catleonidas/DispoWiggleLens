@@ -1,0 +1,12 @@
+todolist:
+
+Zoom 200% when hovering over photo
+Rotate by 90 if taken horizontal
+Allow to chose point at all times. Then if all 3 show confirm focal points
+Make it such that pictures are on top of each other
+
+make final and first screen
+
+Make aspect ratio picture 2
+
+Autocrop vs non autocrop
