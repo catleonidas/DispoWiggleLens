@@ -1,13 +1,11 @@
 from io import BytesIO
 from PIL import Image
 from flask import Flask, request, send_file, jsonify
-import base64
 import json
 import moviepy
 import os
 from flask_cors import CORS
 import numpy as np
-from scipy.signal import correlate2d
 from zipfile import ZipFile
 
 app = Flask(__name__)
