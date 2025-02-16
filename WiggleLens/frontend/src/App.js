@@ -468,7 +468,7 @@ function App() {
             <div className="full-image-container" style={{ display: 'flex', gap: '20px' }}>
               <img 
                 src={fullImagePreview} 
-                alt="Full uploaded image" 
+                alt="" 
                 className="full-image"
               />
               <div
