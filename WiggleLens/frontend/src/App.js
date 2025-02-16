@@ -12,7 +12,6 @@ function App() {
   const [isSplit, setIsSplit] = useState(false);
   const [loadedImage, setLoadedImage] = useState(null);
   const [splitLoading, setSplitLoading] = useState(false);
-  const [autoDetectLoading, setAutoDetectLoading] = useState(false);
 
   // NEW states for the next "options" screen
   const [showWiggleOptions, setShowWiggleOptions] = useState(false);
@@ -468,8 +467,7 @@ function App() {
           {fullImagePreview && !isSplit && (
             <div className="full-image-container" style={{ display: 'flex', gap: '20px' }}>
               <img 
-                src={fullImagePreview} 
-                alt="Full uploaded image" 
+                src={fullImagePreview}
                 className="full-image"
               />
               <div
