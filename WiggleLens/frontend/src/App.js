@@ -467,7 +467,8 @@ function App() {
           {fullImagePreview && !isSplit && (
             <div className="full-image-container" style={{ display: 'flex', gap: '20px' }}>
               <img 
-                src={fullImagePreview}
+                src={fullImagePreview} 
+                alt="Full uploaded image" 
                 className="full-image"
               />
               <div
