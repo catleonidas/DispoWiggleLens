@@ -3,7 +3,7 @@ from PIL import Image
 from flask import Flask, request, send_file, jsonify
 import base64
 import json
-import moviepy.editor as mpe
+import moviepy
 import os
 from flask_cors import CORS
 import numpy as np
@@ -160,7 +160,7 @@ def process_image():
         frames.append(np.array(frame.convert("RGBA")))
 
     # Create video clip with the user-selected number of frames & FPS
-    clip = mpe.ImageSequenceClip(frames, fps=fps)
+    clip = moviepy.editor.ImageSequenceClip(frames, fps=fps)
 
     # 5) Write the clip to an in-memory buffer as an MP4
     video_bytes = BytesIO()
@@ -346,7 +346,7 @@ def process_image_no_rgba():
         frames.append(np.array(frame))
 
     # 5) Create video clip and write to MP4 in-memory
-    clip = mpe.ImageSequenceClip(frames, fps=fps)
+    clip = moviepy.editor.ImageSequenceClip(frames, fps=fps)
 
     video_bytes = BytesIO()
     clip.write_videofile(
