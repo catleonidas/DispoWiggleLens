@@ -270,8 +270,8 @@ function App() {
       // We do /api/process_image_no_rgba if useSecondFrameAsBackground is true,
       // otherwise /api/process_image.
       const endpoint = useSecondFrameAsBackground
-        ? 'http://localhost:5000/api/process_image_no_rgba'
-        : 'http://localhost:5000/api/process_image';
+        ? 'https://dispowigglelens.onrender.com/api/process_image_no_rgba'
+        : 'https://dispowigglelens.onrender.com/api/process_image';
 
       const response = await fetch(endpoint, {
         method: 'POST',
