@@ -270,8 +270,8 @@ function App() {
       // We do /api/process_image_no_rgba if useSecondFrameAsBackground is true,
       // otherwise /api/process_image.
       const endpoint = useSecondFrameAsBackground
-        ? 'https://dispowigglelens.onrender.com/api/process_image_no_rgba'
-        : 'https://dispowigglelens.onrender.com/api/process_image';
+        ? 'http://127.0.0.1:5000/api/process_image_no_rgba'
+        : 'http://127.0.0.1:5000/api/process_image';
 
       const response = await fetch(endpoint, {
         method: 'POST',
@@ -662,6 +662,7 @@ function App() {
               className={`split-button ${useSecondFrameAsBackground ? 'selected-frame' : ''}`}
               style={{ marginRight: '2%', width: '20%' }}
               onClick={() => setUseSecondFrameAsBackground(true)}
+              disabled
             >
               Yes
             </button>
@@ -681,6 +682,7 @@ function App() {
             type="submit"
             className="submit-button split-button"
             style={{ marginRight: '2%', width: '80%', textAlign: "center", marginTop: "20%" }}
+            disabled={loading}
           >
             {loading ? processingText : 'Export Video'}
           </button>
