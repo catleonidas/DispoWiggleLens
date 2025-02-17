@@ -8,6 +8,7 @@ from flask_cors import CORS
 import numpy as np
 from zipfile import ZipFile
 from datetime import datetime
+import uuid
 
 app = Flask(__name__, static_folder="build", static_url_path='')
 CORS(app)
@@ -156,10 +157,13 @@ def process_image():
 
     del frames
 
+    # Generate a unique random filename
+    temp_filename = f"temp_video_{uuid.uuid4()}.mp4"
+
     # 5) Write the clip to an in-memory buffer as an MP4
     video_bytes = BytesIO()
     clip.write_videofile(
-        "temp_video.mp4",
+        temp_filename,
         codec="libx264",
         fps=fps,
         audio=False,
@@ -168,11 +172,11 @@ def process_image():
     )
 
     # Read the file into memory
-    with open("temp_video.mp4", "rb") as f:
+    with open(temp_filename, "rb") as f:
         video_bytes_data = f.read()
 
     # Optionally remove the temp file
-    os.remove("temp_video.mp4")
+    os.remove(temp_filename)
 
     # 6) Return the MP4 in the response
     # Option A: Return as direct file download with correct MIME type
@@ -298,9 +302,12 @@ def process_image_no_rgba():
 
     del frames
 
+    # Generate a unique random filename
+    temp_filename = f"temp_video_no_rgba_{uuid.uuid4()}.mp4"
+
     video_bytes = BytesIO()
     clip.write_videofile(
-        "temp_video_no_rgba.mp4",
+        temp_filename,
         codec="libx264",
         fps=fps,
         audio=False,
@@ -308,10 +315,10 @@ def process_image_no_rgba():
         threads=1
     )
 
-    with open("temp_video_no_rgba.mp4", "rb") as f:
+    with open(temp_filename, "rb") as f:
         video_bytes_data = f.read()
 
-    os.remove("temp_video_no_rgba.mp4")
+    os.remove(temp_filename)
 
     # 6) Return the MP4
     return send_file(
