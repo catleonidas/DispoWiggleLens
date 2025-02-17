@@ -110,7 +110,6 @@ def process_image():
 
         # Store result
         cropped_images.append(section_rgba)
-        section_rgba.save(f"cropped_image_{i}.png")
 
 
     frames = []
@@ -247,7 +246,6 @@ def process_image_no_rgba():
 
         valid_sub = image.crop((fx-SECTION_WIDTH//2, fy-OUTPUT_HEIGHT//2, fx+SECTION_WIDTH//2, fy+OUTPUT_HEIGHT//2))
         cropped_images.append(valid_sub)
-        valid_sub.save(f"cropped_image_{i}.png")
 
     # 4) Compose frames for the video (no RGBA; just plain RGB)
     frames = []
