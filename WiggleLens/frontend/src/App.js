@@ -270,8 +270,8 @@ function App() {
       // We do /api/process_image_no_rgba if useSecondFrameAsBackground is true,
       // otherwise /api/process_image.
       const endpoint = useSecondFrameAsBackground
-        ? 'http://127.0.0.1:5000/api/process_image_no_rgba'
-        : 'http://127.0.0.1:5000/api/process_image';
+        ? 'http://139.162.152.41:8000/api/process_image_no_rgba'
+        : 'http://139.162.152.41:8000/api/process_image';
 
       const response = await fetch(endpoint, {
         method: 'POST',
