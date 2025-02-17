@@ -662,7 +662,6 @@ function App() {
               className={`split-button ${useSecondFrameAsBackground ? 'selected-frame' : ''}`}
               style={{ marginRight: '2%', width: '20%' }}
               onClick={() => setUseSecondFrameAsBackground(true)}
-              disabled
             >
               Yes
             </button>

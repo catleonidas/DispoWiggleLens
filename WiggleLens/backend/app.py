@@ -1,17 +1,21 @@
 from io import BytesIO
 from PIL import Image
-from flask import Flask, request, send_file, jsonify
-import base64
+from flask import Flask, request, send_file, jsonify, send_from_directory
 import json
-import moviepy.editor as mpe
+from moviepy.video.io.ImageSequenceClip import ImageSequenceClip
 import os
 from flask_cors import CORS
 import numpy as np
-from scipy.signal import correlate2d
 from zipfile import ZipFile
+from datetime import datetime
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder="build", static_url_path='')
 CORS(app)
+
+@app.route('/')
+def serve_index():
+    return send_from_directory(app.static_folder, 'index.html')
+
 
 @app.route('/api/process_image', methods=['POST'])
 def process_image():
@@ -148,7 +152,7 @@ def process_image():
         frames.append(np.array(frame.convert("RGBA")))
 
     # Create video clip with the user-selected number of frames & FPS
-    clip = mpe.ImageSequenceClip(frames, fps=fps)
+    clip = ImageSequenceClip(frames, fps=fps)
 
     del frames
 
@@ -230,7 +234,7 @@ def process_image_no_rgba():
 
     # 3) For each focal point, crop a sub‐image (just in RGB)
     cropped_images = []
-    for i, fp in enumerate(focal_points):
+    for i,fp in enumerate(focal_points):
         fx, fy = fp["x"], fp["y"]
         # Center the sub‐image around (fx, fy), width=SECTION_WIDTH, height=OUTPUT_HEIGHT
         desired_w = SECTION_WIDTH
@@ -239,13 +243,14 @@ def process_image_no_rgba():
         desired_top  = fy - (desired_h // 2)
 
         # Clamp to valid region
-        source_left   = max(0, desired_left)
+        source_left   = max(0 + SECTION_WIDTH*i, desired_left)
         source_top    = max(0, desired_top)
-        source_right  = min(EXPECTED_WIDTH,  desired_left + desired_w)
+        source_right  = min(SECTION_WIDTH*(i+1),  desired_left + desired_w)
         source_bottom = min(EXPECTED_HEIGHT, desired_top  + desired_h)
-
-        valid_sub = image.crop((fx-SECTION_WIDTH//2, fy-OUTPUT_HEIGHT//2, fx+SECTION_WIDTH//2, fy+OUTPUT_HEIGHT//2))
+        valid_sub = image.crop((source_left, source_top, source_right, source_bottom))
+        valid_sub.save(f"cropped_{len(cropped_images)}.png")  # Simple numbered files in current directory
         cropped_images.append(valid_sub)
+
 
     # 4) Compose frames for the video (no RGBA; just plain RGB)
     frames = []
@@ -269,17 +274,19 @@ def process_image_no_rgba():
         # Paste the "top" image last, adjusting offset_x depending on the top_image_idx
         top_img = cropped_images[top_image_idx]
 
-        offset_y = ((OUTPUT_HEIGHT - top_img.height) // 2)
+        if top_image_idx == 1:
+            offset_y = (OUTPUT_HEIGHT - top_img.height) // 2
+        elif(focal_points[top_image_idx]["y"] - OUTPUT_HEIGHT//2 >= 0):
+            offset_y = 0
+        else:
+            offset_y = ((OUTPUT_HEIGHT - top_img.height))
 
-        # If top_image_idx == 0 (first image), put it at the left edge.
-        # If top_image_idx == 2 (third image), put it at the right edge.
-        # Otherwise (second image), center it horizontally.
-        if top_image_idx == 0:  # First image
-            offset_x = OUTPUT_WIDTH - top_img.width
-        elif top_image_idx == 2:  # Third image
-            offset_x = 0
-        else:  # Second image
+        if top_image_idx == 1:
             offset_x = (OUTPUT_WIDTH - top_img.width) // 2
+        elif(focal_points[top_image_idx]["x"] - OUTPUT_WIDTH//2 >= 0):
+            offset_x = 0
+        else:
+            offset_x = ((OUTPUT_WIDTH - top_img.width))
 
         frame.paste(top_img, (offset_x, offset_y))
 
@@ -287,7 +294,7 @@ def process_image_no_rgba():
         frames.append(np.array(frame))
 
     # 5) Create video clip and write to MP4 in-memory
-    clip = mpe.ImageSequenceClip(frames, fps=fps)
+    clip = ImageSequenceClip(frames, fps=fps)
 
     del frames
 
@@ -315,4 +322,4 @@ def process_image_no_rgba():
     )
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=8000)
