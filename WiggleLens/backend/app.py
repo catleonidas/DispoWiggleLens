@@ -46,6 +46,16 @@ def process_image():
     focal_points_str = request.form.get('focalPoints', '[]')
     focal_points = json.loads(focal_points_str)
 
+    # Ensure focal points are integers
+    try:
+        for fp in focal_points:
+            fp["x"] = int(fp["x"])
+            fp["y"] = int(fp["y"])
+    except (ValueError, TypeError):
+        return jsonify({
+            "error": "Focal points must be valid integers"
+        }), 400
+
     # New param: if "useSecondFrameAsBackground" param is "true",
     # we'll use a transparent canvas instead of black
     use_second_bg_str = request.form.get('useSecondFrameAsBackground', 'false')
@@ -62,9 +72,10 @@ def process_image():
     EXPECTED_WIDTH = width
     EXPECTED_HEIGHT = height
     check_ratio = width/height
-    if check_ratio != 1.5:
+    
+    if not (1.4 <= check_ratio <= 1.6):
         return jsonify({
-            "error": f"Image must be exactly 3:2 or 2:3 ratio, got {width}x{height}"
+            "error": f"Image must have an aspect ratio between 1.4 and 1.6, got {check_ratio:.2f}"
         }), 400
 
     # Dimensions for final video
@@ -194,7 +205,7 @@ def process_image_no_rgba():
     for intermediate cropping or compositing.
     """
 
-    # 1) Validate input
+    
     if 'image' not in request.files:
         return jsonify({"error": "No image file provided"}), 400
 
@@ -203,6 +214,17 @@ def process_image_no_rgba():
     # Parse focal points
     focal_points_str = request.form.get('focalPoints', '[]')
     focal_points = json.loads(focal_points_str)
+
+    # Ensure focal points are integers
+    try:
+        for fp in focal_points:
+            fp["x"] = int(fp["x"])
+            fp["y"] = int(fp["y"])
+    except (ValueError, TypeError):
+        return jsonify({
+            "error": "Focal points must be valid integers"
+        }), 400
+
 
     # New param: if "useSecondFrameAsBackground" param is "true",
     # we'll use the second cropped sub-image as our background.
@@ -218,9 +240,9 @@ def process_image_no_rgba():
     EXPECTED_WIDTH = width
     EXPECTED_HEIGHT = height
     check_ratio = width/height
-    if check_ratio != 1.5:
+    if not (1.4 <= check_ratio <= 1.6):
         return jsonify({
-            "error": f"Image must be exactly {EXPECTED_WIDTH}x{EXPECTED_HEIGHT}, got {width}x{height}"
+            "error": f"Image must have an aspect ratio between 1.4 and 1.6, got {check_ratio:.2f}"
         }), 400
 
     # Dimensions for final video

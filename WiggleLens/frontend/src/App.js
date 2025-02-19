@@ -117,7 +117,7 @@ function App() {
       const w = img.width;
       const h = img.height;
       const ratio = w / h;
-      const epsilon = 0.01;
+      const epsilon = 0.1;
 
       const isThreeTwo = Math.abs(ratio - 1.5) < epsilon;   // ~3:2
       const isTwoThree = Math.abs(ratio - 0.6667) < epsilon; // ~2:3
@@ -270,8 +270,8 @@ function App() {
       // We do /api/process_image_no_rgba if useSecondFrameAsBackground is true,
       // otherwise /api/process_image.
       const endpoint = useSecondFrameAsBackground
-        ? 'http://139.162.152.41:8000/api/process_image_no_rgba'
-        : 'http://139.162.152.41:8000/api/process_image';
+        ? 'http://192.168.0.12:8000/api/process_image_no_rgba'
+        : 'http://192.168.0.12:8000/api/process_image';
 
       const response = await fetch(endpoint, {
         method: 'POST',
