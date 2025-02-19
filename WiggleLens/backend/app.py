@@ -251,9 +251,16 @@ def process_image_no_rgba():
         source_top    = max(0, desired_top)
         source_right  = min(SECTION_WIDTH*(i+1),  desired_left + desired_w)
         source_bottom = min(EXPECTED_HEIGHT, desired_top  + desired_h)
-        valid_sub = image.crop((source_left, source_top, source_right, source_bottom))
-        valid_sub.save(f"cropped_{len(cropped_images)}.png")  # Simple numbered files in current directory
-        cropped_images.append(valid_sub)
+
+        if i == 1:
+            valid_sub = image.crop((SECTION_WIDTH*i, 0, SECTION_WIDTH*(i+1), EXPECTED_HEIGHT))
+            cropped_images.append(valid_sub)
+
+        else:
+
+            valid_sub = image.crop((source_left, source_top, source_right, source_bottom))
+            cropped_images.append(valid_sub)
+        #valid_sub.save(f"cropped_{len(cropped_images)}.png")  # Simple numbered files in current directory
 
 
     # 4) Compose frames for the video (no RGBA; just plain RGB)
@@ -279,18 +286,14 @@ def process_image_no_rgba():
         top_img = cropped_images[top_image_idx]
 
         if top_image_idx == 1:
-            offset_y = (OUTPUT_HEIGHT - top_img.height) // 2
-        elif(focal_points[top_image_idx]["y"] - OUTPUT_HEIGHT//2 >= 0):
             offset_y = 0
         else:
-            offset_y = ((OUTPUT_HEIGHT - top_img.height))
+            offset_y = max(focal_points[1]["y"] - OUTPUT_HEIGHT//2,focal_points[1]["y"] - focal_points[top_image_idx]["y"])
 
         if top_image_idx == 1:
-            offset_x = (OUTPUT_WIDTH - top_img.width) // 2
-        elif(focal_points[top_image_idx]["x"] - OUTPUT_WIDTH//2 >= 0):
             offset_x = 0
         else:
-            offset_x = ((OUTPUT_WIDTH - top_img.width))
+            offset_x = max(focal_points[1]["x"]%OUTPUT_WIDTH - OUTPUT_WIDTH//2, focal_points[1]["x"]%OUTPUT_WIDTH - focal_points[top_image_idx]["x"]%OUTPUT_WIDTH)
 
         frame.paste(top_img, (offset_x, offset_y))
 
